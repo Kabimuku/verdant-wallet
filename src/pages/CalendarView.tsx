@@ -168,26 +168,26 @@ export default function CalendarView() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="bg-card border-b p-6">
+      <div className="glass-card rounded-none border-x-0 border-t-0 p-6">
         <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" onClick={() => navigateMonth('prev')}>
+          <Button variant="ghost" onClick={() => navigateMonth('prev')} className="text-muted-foreground hover:text-foreground">
             <ChevronLeft className="h-5 w-5" />
           </Button>
           
-          <h1 className="text-xl font-bold">
+          <h1 className="text-xl font-bold text-foreground">
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h1>
           
-          <Button variant="ghost" onClick={() => navigateMonth('next')}>
+          <Button variant="ghost" onClick={() => navigateMonth('next')} className="text-muted-foreground hover:text-foreground">
             <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
       </div>
 
-      <div className="p-6">
-        <Card>
+      <div className="p-6 pb-24">
+        <Card className="glass-card">
           <CardContent className="p-4">
             {/* Day headers */}
             <div className="grid grid-cols-7 gap-2 mb-2">
@@ -247,9 +247,9 @@ export default function CalendarView() {
         </Card>
 
         {/* Recent transactions for current month */}
-        <Card className="mt-6">
+        <Card className="glass-card mt-6">
           <CardHeader>
-            <CardTitle>This Month's Transactions</CardTitle>
+            <CardTitle className="text-foreground">This Month's Transactions</CardTitle>
           </CardHeader>
           <CardContent>
             {Object.keys(transactions).length === 0 ? (

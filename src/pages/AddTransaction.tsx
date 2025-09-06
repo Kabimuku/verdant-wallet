@@ -111,30 +111,30 @@ export default function AddTransaction() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="bg-card border-b p-4">
+      <div className="glass-card rounded-none border-x-0 border-t-0 p-4">
         <div className="flex items-center space-x-4">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/')}
-            className="p-2"
+            className="p-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-semibold">Add Transaction</h1>
+          <h1 className="text-xl font-semibold text-foreground">Add Transaction</h1>
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 pb-24">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Transaction Type Toggle */}
-          <div className="flex bg-muted rounded-lg p-1">
+          <div className="flex bg-muted/30 rounded-xl p-1">
             <Button
               type="button"
               variant={transactionType === 'income' ? 'default' : 'ghost'}
-              className="flex-1"
+              className="flex-1 bg-primary data-[state=active]:bg-primary"
               onClick={() => {
                 setTransactionType('income');
                 setFormData(prev => ({ ...prev, categoryId: '' }));
@@ -145,7 +145,7 @@ export default function AddTransaction() {
             <Button
               type="button"
               variant={transactionType === 'expense' ? 'default' : 'ghost'}
-              className="flex-1"
+              className="flex-1 bg-primary data-[state=active]:bg-primary"
               onClick={() => {
                 setTransactionType('expense');
                 setFormData(prev => ({ ...prev, categoryId: '' }));
@@ -156,22 +156,24 @@ export default function AddTransaction() {
           </div>
 
           {/* Amount */}
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount *</Label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₹</span>
-              <Input
-                id="amount"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                className="pl-8 text-lg"
-                value={formData.amount}
-                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
+          <Card className="glass-card">
+            <CardContent className="p-4">
+              <Label htmlFor="amount" className="text-foreground font-medium">Amount *</Label>
+              <div className="relative mt-2">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₹</span>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  className="pl-8 text-lg bg-transparent border-border/50 text-foreground"
+                  value={formData.amount}
+                  onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                  required
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Category */}
           <div className="space-y-2">
@@ -237,7 +239,7 @@ export default function AddTransaction() {
           {/* Submit Button */}
           <Button 
             type="submit" 
-            className="w-full py-6 text-lg rounded-2xl"
+            className="w-full py-6 text-lg rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-soft"
             disabled={loading}
           >
             {loading ? (

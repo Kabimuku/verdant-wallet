@@ -155,54 +155,65 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-dark relative">
       {/* Header */}
-      <div className="bg-primary text-primary-foreground p-6 pb-8">
+      <div className="gradient-dark p-6 pb-8">
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Good Morning</h1>
-            <p className="text-primary-foreground/80">{user?.email}</p>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-lg">
+                {user?.email?.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Hi {user?.email?.split('@')[0]}</h1>
+              <p className="text-muted-foreground text-sm">Welcome back!</p>
+            </div>
           </div>
-          <Link to="/add-transaction">
-            <Button size="sm" variant="secondary" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-              <Plus className="h-4 w-4 mr-2" />
-              Add
-            </Button>
-          </Link>
         </div>
 
         {/* Total Balance */}
-        <Card className="bg-white/10 border-white/20 text-white">
+        <Card className="glass-card">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-primary-foreground/80">Total Balance</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">Total Balance</h3>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowBalance(!showBalance)}
-                className="text-white hover:bg-white/20 p-1 h-auto"
+                className="text-muted-foreground hover:text-foreground p-1 h-auto"
               >
                 {showBalance ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </Button>
             </div>
-            <p className="text-3xl font-bold">
+            <p className="text-3xl font-bold text-foreground">
               {showBalance ? formatCurrency(totalBalance) : '••••••••'}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="p-6 space-y-6">
+      {/* Floating Add Button */}
+      <Link to="/add-transaction">
+        <Button 
+          size="icon" 
+          className="fixed bottom-20 right-6 h-14 w-14 rounded-full bg-primary hover:bg-primary/90 shadow-soft z-50"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      </Link>
+
+      <div className="p-6 space-y-6 pb-24">
         {/* Balance Chart */}
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg">Balance Trend</CardTitle>
+            <CardTitle className="text-lg text-foreground">Balance Trend</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={balanceData}>
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} className="text-xs" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} className="text-xs fill-muted-foreground" />
                   <YAxis hide />
                   <Line 
                     type="monotone" 
@@ -218,31 +229,31 @@ export default function Dashboard() {
         </Card>
 
         {/* Monthly Overview */}
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg">This Month's Summary</CardTitle>
+            <CardTitle className="text-lg text-foreground">This Month's Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-success/10 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-success/20 rounded-xl border border-success/30">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-success rounded-full flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-success-foreground" />
+                <div className="w-12 h-12 bg-success rounded-full flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-success-foreground" />
                 </div>
                 <div>
-                  <p className="font-medium">Income</p>
+                  <p className="font-semibold text-foreground">Income</p>
                   <p className="text-sm text-muted-foreground">This month</p>
                 </div>
               </div>
               <p className="text-xl font-bold text-success">{formatCurrency(monthlyIncome)}</p>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-destructive/10 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-destructive/20 rounded-xl border border-destructive/30">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-destructive rounded-full flex items-center justify-center">
-                  <TrendingDown className="h-5 w-5 text-destructive-foreground" />
+                <div className="w-12 h-12 bg-destructive rounded-full flex items-center justify-center">
+                  <TrendingDown className="h-6 w-6 text-destructive-foreground" />
                 </div>
                 <div>
-                  <p className="font-medium">Expenses</p>
+                  <p className="font-semibold text-foreground">Expenses</p>
                   <p className="text-sm text-muted-foreground">This month</p>
                 </div>
               </div>
@@ -252,11 +263,11 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card>
+        <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Recent Transactions</CardTitle>
+            <CardTitle className="text-lg text-foreground">Recent Transactions</CardTitle>
             <Link to="/calendar">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Calendar className="h-4 w-4 mr-2" />
                 View All
               </Button>
@@ -267,27 +278,27 @@ export default function Dashboard() {
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">No transactions yet</p>
                 <Link to="/add-transaction">
-                  <Button>Add Your First Transaction</Button>
+                  <Button className="bg-primary hover:bg-primary/90">Add Your First Transaction</Button>
                 </Link>
               </div>
             ) : (
               <div className="space-y-3">
                 {transactions.slice(0, 5).map((transaction) => (
-                  <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={transaction.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50">
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: transaction.categories?.color || '#10B981' }}
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: transaction.categories?.color || 'hsl(var(--primary))' }}
                       />
                       <div>
-                        <p className="font-medium">{transaction.categories?.name || 'Uncategorized'}</p>
+                        <p className="font-semibold text-foreground">{transaction.categories?.name || 'Uncategorized'}</p>
                         <p className="text-sm text-muted-foreground">
                           {new Date(transaction.transaction_date).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`font-bold ${
+                      <p className={`font-bold text-lg ${
                         transaction.type === 'income' ? 'text-success' : 'text-destructive'
                       }`}>
                         {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}

@@ -186,44 +186,44 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="bg-primary text-primary-foreground p-6">
+      <div className="gradient-dark p-6">
         <div className="flex items-center space-x-4 mb-6">
-          <Avatar className="h-16 w-16 bg-white/20">
-            <AvatarFallback className="bg-white/20 text-white text-lg font-bold">
+          <Avatar className="h-16 w-16 bg-primary">
+            <AvatarFallback className="bg-primary text-primary-foreground text-lg font-bold">
               {getInitials(profile.full_name || profile.email)}
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-2xl font-bold">{profile.full_name || 'User'}</h1>
-            <p className="text-primary-foreground/80">{profile.email}</p>
+            <h1 className="text-2xl font-bold text-foreground">{profile.full_name || 'User'}</h1>
+            <p className="text-muted-foreground">{profile.email}</p>
           </div>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 pb-24">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4">
-          <Card>
+          <Card className="glass-card">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Transactions</p>
-                  <p className="text-xl font-bold">{stats.totalTransactions}</p>
+                  <p className="text-xl font-bold text-foreground">{stats.totalTransactions}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="glass-card">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Settings className="h-5 w-5 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Categories</p>
-                  <p className="text-xl font-bold">{stats.categoriesCount}</p>
+                  <p className="text-xl font-bold text-foreground">{stats.categoriesCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -231,9 +231,9 @@ export default function Profile() {
         </div>
 
         {/* Income/Expense Overview */}
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 text-foreground">
               <Wallet className="h-5 w-5" />
               <span>Financial Overview</span>
             </CardTitle>
@@ -274,9 +274,9 @@ export default function Profile() {
         </Card>
 
         {/* Profile Form */}
-        <Card>
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
+            <CardTitle className="flex items-center space-x-2 text-foreground">
               <User className="h-5 w-5" />
               <span>Profile Settings</span>
             </CardTitle>
@@ -316,7 +316,7 @@ export default function Profile() {
         </Card>
 
         {/* Sign Out */}
-        <Card>
+        <Card className="glass-card">
           <CardContent className="p-4">
             <Button 
               variant="destructive" 

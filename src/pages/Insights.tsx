@@ -147,19 +147,19 @@ export default function Insights() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="bg-card border-b p-6">
-        <h1 className="text-2xl font-bold mb-4">Insights</h1>
+      <div className="glass-card rounded-none border-x-0 border-t-0 p-6">
+        <h1 className="text-2xl font-bold mb-4 text-foreground">Insights</h1>
         
         {/* Timeframe Toggle */}
-        <div className="flex bg-muted rounded-lg p-1 mb-4">
+        <div className="flex bg-muted/30 rounded-xl p-1 mb-4">
           {(['daily', 'monthly', 'yearly'] as const).map((period) => (
             <Button
               key={period}
               type="button"
               variant={timeframe === period ? 'default' : 'ghost'}
-              className="flex-1"
+              className="flex-1 text-foreground"
               onClick={() => setTimeframe(period)}
             >
               {period.charAt(0).toUpperCase() + period.slice(1)}
@@ -168,11 +168,11 @@ export default function Insights() {
         </div>
         
         {/* Type Toggle */}
-        <div className="flex bg-muted rounded-lg p-1">
+        <div className="flex bg-muted/30 rounded-xl p-1">
           <Button
             type="button"
             variant={viewType === 'income' ? 'default' : 'ghost'}
-            className="flex-1"
+            className="flex-1 text-foreground"
             onClick={() => setViewType('income')}
           >
             Income
@@ -180,7 +180,7 @@ export default function Insights() {
           <Button
             type="button"
             variant={viewType === 'expense' ? 'default' : 'ghost'}
-            className="flex-1"
+            className="flex-1 text-foreground"
             onClick={() => setViewType('expense')}
           >
             Expenses
@@ -188,9 +188,9 @@ export default function Insights() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-6 pb-24">
         {chartData.length === 0 ? (
-          <Card>
+          <Card className="glass-card">
             <CardContent className="text-center py-12">
               <p className="text-muted-foreground mb-4">
                 No {viewType} data for {getTimeframeLabel().toLowerCase()}
@@ -203,11 +203,11 @@ export default function Insights() {
         ) : (
           <>
             {/* Pie Chart */}
-            <Card className="mb-6">
+            <Card className="glass-card mb-6">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle className="flex items-center justify-between text-foreground">
                   <span>{viewType.charAt(0).toUpperCase() + viewType.slice(1)} Breakdown</span>
-                  <span className="text-xl font-bold">
+                  <span className="text-xl font-bold text-primary">
                     {formatCurrency(totalAmount)}
                   </span>
                 </CardTitle>
@@ -236,9 +236,9 @@ export default function Insights() {
             </Card>
 
             {/* Legend */}
-            <Card>
+            <Card className="glass-card">
               <CardHeader>
-                <CardTitle>Category Details</CardTitle>
+                <CardTitle className="text-foreground">Category Details</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -246,16 +246,16 @@ export default function Insights() {
                     const percentage = ((category.value / totalAmount) * 100).toFixed(1);
                     
                     return (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50">
                         <div className="flex items-center space-x-3">
                           <div 
                             className="w-4 h-4 rounded-full"
                             style={{ backgroundColor: category.color }}
                           />
-                          <span className="font-medium">{category.name}</span>
+                          <span className="font-semibold text-foreground">{category.name}</span>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold">{formatCurrency(category.value)}</p>
+                          <p className="font-bold text-foreground">{formatCurrency(category.value)}</p>
                           <p className="text-sm text-muted-foreground">{percentage}%</p>
                         </div>
                       </div>
