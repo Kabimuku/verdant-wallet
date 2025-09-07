@@ -13,7 +13,7 @@ export function BottomNavigation() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/80 backdrop-blur-md border-t border-border/50 shadow-soft">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-md border-t border-border/50 shadow-soft animate-fade-in">
       <div className="flex items-center justify-around h-16 max-w-md mx-auto relative">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
@@ -30,9 +30,9 @@ export function BottomNavigation() {
               )}
             >
               {isActive && (
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-primary rounded-full" />
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-primary rounded-full animate-scale-in" />
               )}
-              <Icon className={cn("h-5 w-5 mb-1 transition-transform", isActive && "scale-110")} />
+              <Icon className={cn("h-5 w-5 mb-1 transition-all duration-200", isActive && "scale-110 text-primary")} />
               <span className="text-xs font-medium">{label}</span>
             </Link>
           );

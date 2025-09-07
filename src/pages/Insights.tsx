@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -192,12 +193,22 @@ export default function Insights() {
         {chartData.length === 0 ? (
           <Card className="glass-card">
             <CardContent className="text-center py-12">
-              <p className="text-muted-foreground mb-4">
+              <div className="w-32 h-32 mx-auto mb-6 bg-muted/30 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 border-4 border-dashed border-muted-foreground/50 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-primary/20 rounded-full"></div>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 No {viewType} data for {getTimeframeLabel().toLowerCase()}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Start tracking your finances to see detailed insights and analytics
               </p>
-              <p className="text-sm text-muted-foreground">
-                Add some transactions to see your insights
-              </p>
+              <Link to="/add-transaction">
+                <Button className="text-primary-foreground">
+                  Add Your First Transaction
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         ) : (

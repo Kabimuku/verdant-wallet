@@ -212,15 +212,32 @@ export default function Dashboard() {
           <CardContent>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={balanceData}>
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} className="text-xs fill-muted-foreground" />
-                  <YAxis hide />
+                <LineChart data={balanceData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <XAxis 
+                    dataKey="date" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    className="text-xs fill-muted-foreground" 
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    className="text-xs fill-muted-foreground"
+                    tickFormatter={(value) => `₹${Math.abs(value) > 999 ? (value/1000).toFixed(0) + 'k' : value}`}
+                  />
+                  <defs>
+                    <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
                   <Line 
                     type="monotone" 
                     dataKey="balance" 
                     stroke="hsl(var(--primary))" 
                     strokeWidth={3}
                     dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 4 }}
+                    fill="url(#balanceGradient)"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -293,7 +310,7 @@ export default function Dashboard() {
                       <div>
                         <p className="font-semibold text-foreground">{transaction.categories?.name || 'Uncategorized'}</p>
                         <p className="text-sm text-muted-foreground">
-                          {new Date(transaction.transaction_date).toLocaleDateString()}
+                          {new Date(transaction.transaction_date).toLocaleDateString()} • {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                     </div>

@@ -11,6 +11,7 @@ import AddTransaction from "./pages/AddTransaction";
 import Insights from "./pages/Insights";
 import CalendarView from "./pages/CalendarView";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="insights" element={<Insights />} />
               <Route path="calendar" element={<CalendarView />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

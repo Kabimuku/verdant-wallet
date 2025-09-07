@@ -187,6 +187,55 @@ export default function CalendarView() {
       </div>
 
       <div className="p-6 pb-24">
+        {/* Monthly Summary Cards */}
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <Card className="glass-card">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Income</p>
+              <p className="text-lg font-bold text-success">
+                {formatCurrency(
+                  Object.values(transactions)
+                    .flat()
+                    .filter(t => t.type === 'income')
+                    .reduce((sum, t) => sum + Number(t.amount), 0)
+                )}
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Expenses</p>
+              <p className="text-lg font-bold text-destructive">
+                {formatCurrency(
+                  Object.values(transactions)
+                    .flat()
+                    .filter(t => t.type === 'expense')
+                    .reduce((sum, t) => sum + Number(t.amount), 0)
+                )}
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="glass-card">
+            <CardContent className="p-4 text-center">
+              <p className="text-sm text-muted-foreground mb-1">Balance</p>
+              <p className={`text-lg font-bold ${
+                Object.values(transactions)
+                  .flat()
+                  .reduce((sum, t) => t.type === 'income' ? sum + Number(t.amount) : sum - Number(t.amount), 0) >= 0
+                  ? 'text-success' : 'text-destructive'
+              }`}>
+                {formatCurrency(
+                  Object.values(transactions)
+                    .flat()
+                    .reduce((sum, t) => t.type === 'income' ? sum + Number(t.amount) : sum - Number(t.amount), 0)
+                )}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card className="glass-card">
           <CardContent className="p-4">
             {/* Day headers */}
@@ -231,11 +280,8 @@ export default function CalendarView() {
                             summary.total >= 0 ? 'bg-success' : 'bg-destructive'
                           }`}
                         />
-                        <div className="text-xs text-center text-muted-foreground truncate">
-                          {Math.abs(summary.total) > 999 
-                            ? `₹${(Math.abs(summary.total) / 1000).toFixed(0)}k`
-                            : `₹${Math.abs(summary.total).toFixed(0)}`
-                          }
+                        <div className="text-xs text-center text-foreground font-medium">
+                          {formatCurrency(Math.abs(summary.total))}
                         </div>
                       </div>
                     )}
