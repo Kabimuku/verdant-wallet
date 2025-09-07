@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { ProgressBar } from '@/components/ProgressBar';
 
 interface CategoryData {
   name: string;
@@ -194,27 +194,30 @@ export default function Insights() {
           <Card className="glass-card">
             <CardContent className="text-center py-12">
               <div className="w-32 h-32 mx-auto mb-6 bg-muted/30 rounded-full flex items-center justify-center">
-                <div className="w-20 h-20 border-4 border-dashed border-muted-foreground/50 rounded-full flex items-center justify-center">
-                  <div className="w-12 h-12 bg-primary/20 rounded-full"></div>
-                </div>
+                <div className="text-6xl mb-4">📊</div>
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 No {viewType} data for {getTimeframeLabel().toLowerCase()}
               </h3>
               <p className="text-muted-foreground mb-6">
-                Start tracking your finances to see detailed insights and analytics
+                Start tracking your finances to see detailed insights and beautiful progress charts
               </p>
-              <Link to="/add-transaction">
-                <Button className="text-primary-foreground">
-                  Add Your First Transaction
-                </Button>
-              </Link>
+              <div className="space-y-3">
+                <Link to="/add-transaction">
+                  <Button className="w-full text-primary-foreground">
+                    Add Your First Transaction
+                  </Button>
+                </Link>
+                <p className="text-xs text-muted-foreground">
+                  Track your {viewType} to see category breakdowns and spending patterns
+                </p>
+              </div>
             </CardContent>
           </Card>
         ) : (
           <>
-            {/* Pie Chart */}
-            <Card className="glass-card mb-6">
+            {/* Progress Bars */}
+            <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between text-foreground">
                   <span>{viewType.charAt(0).toUpperCase() + viewType.slice(1)} Breakdown</span>
@@ -223,56 +226,22 @@ export default function Insights() {
                   </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={chartData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        labelLine={false}
-                      >
-                        {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Legend */}
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-foreground">Category Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {chartData.map((category, index) => {
-                    const percentage = ((category.value / totalAmount) * 100).toFixed(1);
-                    
-                    return (
-                      <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50">
-                        <div className="flex items-center space-x-3">
-                          <div 
-                            className="w-4 h-4 rounded-full"
-                            style={{ backgroundColor: category.color }}
-                          />
-                          <span className="font-semibold text-foreground">{category.name}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-foreground">{formatCurrency(category.value)}</p>
-                          <p className="text-sm text-muted-foreground">{percentage}%</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              <CardContent className="space-y-6">
+                {chartData.map((category, index) => {
+                  const percentage = (category.value / totalAmount) * 100;
+                  
+                  return (
+                    <ProgressBar
+                      key={index}
+                      label={category.name}
+                      amount={category.value}
+                      percentage={percentage}
+                      color={category.color}
+                      icon="📊"
+                      formatCurrency={formatCurrency}
+                    />
+                  );
+                })}
               </CardContent>
             </Card>
           </>

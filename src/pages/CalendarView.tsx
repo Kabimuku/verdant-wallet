@@ -27,6 +27,7 @@ export default function CalendarView() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<DayTransactions>({});
   const [loading, setLoading] = useState(true);
+  const [monthlyStats, setMonthlyStats] = useState({ income: 0, expenses: 0, balance: 0 });
 
   useEffect(() => {
     if (user) {
@@ -76,6 +77,21 @@ export default function CalendarView() {
       });
 
       setTransactions(groupedTransactions);
+      
+      // Calculate monthly stats
+      const allTransactions = Object.values(groupedTransactions).flat();
+      const income = allTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      const expenses = allTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      
+      setMonthlyStats({
+        income,
+        expenses,
+        balance: income - expenses
+      });
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -192,45 +208,22 @@ export default function CalendarView() {
           <Card className="glass-card">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-muted-foreground mb-1">Income</p>
-              <p className="text-lg font-bold text-success">
-                {formatCurrency(
-                  Object.values(transactions)
-                    .flat()
-                    .filter(t => t.type === 'income')
-                    .reduce((sum, t) => sum + Number(t.amount), 0)
-                )}
-              </p>
+              <p className="text-lg font-bold text-success">{formatCurrency(monthlyStats.income)}</p>
             </CardContent>
           </Card>
           
           <Card className="glass-card">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-muted-foreground mb-1">Expenses</p>
-              <p className="text-lg font-bold text-destructive">
-                {formatCurrency(
-                  Object.values(transactions)
-                    .flat()
-                    .filter(t => t.type === 'expense')
-                    .reduce((sum, t) => sum + Number(t.amount), 0)
-                )}
-              </p>
+              <p className="text-lg font-bold text-destructive">{formatCurrency(monthlyStats.expenses)}</p>
             </CardContent>
           </Card>
           
           <Card className="glass-card">
             <CardContent className="p-4 text-center">
               <p className="text-sm text-muted-foreground mb-1">Balance</p>
-              <p className={`text-lg font-bold ${
-                Object.values(transactions)
-                  .flat()
-                  .reduce((sum, t) => t.type === 'income' ? sum + Number(t.amount) : sum - Number(t.amount), 0) >= 0
-                  ? 'text-success' : 'text-destructive'
-              }`}>
-                {formatCurrency(
-                  Object.values(transactions)
-                    .flat()
-                    .reduce((sum, t) => t.type === 'income' ? sum + Number(t.amount) : sum - Number(t.amount), 0)
-                )}
+              <p className={`text-lg font-bold ${monthlyStats.balance >= 0 ? 'text-success' : 'text-destructive'}`}>
+                {formatCurrency(monthlyStats.balance)}
               </p>
             </CardContent>
           </Card>

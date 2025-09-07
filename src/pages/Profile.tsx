@@ -153,22 +153,24 @@ export default function Profile() {
           </Link>
 
           {/* Categories Card */}
-          <Card className="glass-card hover:bg-card/90 transition-colors cursor-pointer">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                    <Settings className="h-6 w-6 text-primary" />
+          <Link to="/categories">
+            <Card className="glass-card hover:bg-card/90 transition-colors">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                      <Settings className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+                      <p className="text-sm text-muted-foreground">{stats.categoriesCount} categories created</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Categories</h3>
-                    <p className="text-sm text-muted-foreground">{stats.categoriesCount} categories created</p>
-                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Link>
 
           {/* App Settings Card */}
           <Link to="/settings">
