@@ -38,7 +38,7 @@ export default function AllTransactionHistory() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('all-months');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
@@ -118,7 +118,7 @@ export default function AllTransactionHistory() {
     }
 
     // Month filter
-    if (selectedMonth) {
+    if (selectedMonth && selectedMonth !== 'all-months') {
       filtered = filtered.filter(t => {
         const transactionMonth = new Date(t.transaction_date).toISOString().slice(0, 7);
         return transactionMonth === selectedMonth;
@@ -219,8 +219,8 @@ export default function AllTransactionHistory() {
                 <Calendar className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="All months" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">All months</SelectItem>
+              <SelectContent className="bg-card border-border">
+                <SelectItem value="all-months">All months</SelectItem>
                 {getMonthOptions().map(month => (
                   <SelectItem key={month.value} value={month.value}>
                     {month.label}
@@ -234,7 +234,7 @@ export default function AllTransactionHistory() {
                 <Filter className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border">
                 <SelectItem value="all">All categories</SelectItem>
                 {categories.map(category => (
                   <SelectItem key={category.id} value={category.name}>
