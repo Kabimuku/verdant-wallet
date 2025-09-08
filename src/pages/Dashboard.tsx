@@ -283,7 +283,7 @@ export default function Dashboard() {
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-lg text-foreground">Recent Transactions</CardTitle>
-            <Link to="/calendar">
+            <Link to="/transactions">
               <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Calendar className="h-4 w-4 mr-2" />
                 View All

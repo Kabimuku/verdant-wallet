@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,7 @@ export default function CalendarView() {
   
   const [currentDate, setCurrentDate] = useState(new Date());
   const [transactions, setTransactions] = useState<DayTransactions>({});
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [monthlyStats, setMonthlyStats] = useState({ income: 0, expenses: 0, balance: 0 });
 
@@ -63,27 +65,35 @@ export default function CalendarView() {
 
       if (error) throw error;
 
+      // Type the transactions and store all
+      const typedTransactions = (transactionsData || []).map(t => ({
+        ...t,
+        type: t.type as 'income' | 'expense',
+        categories: t.categories ? {
+          name: t.categories.name || '',
+          color: t.categories.color || '#9ACD32'
+        } : undefined
+      }));
+
+      setAllTransactions(typedTransactions);
+
       // Group transactions by date
       const groupedTransactions: DayTransactions = {};
-      (transactionsData || []).forEach((transaction) => {
+      typedTransactions.forEach((transaction) => {
         const dateKey = transaction.transaction_date.split('T')[0];
         if (!groupedTransactions[dateKey]) {
           groupedTransactions[dateKey] = [];
         }
-        groupedTransactions[dateKey].push({
-          ...transaction,
-          type: transaction.type as 'income' | 'expense'
-        });
+        groupedTransactions[dateKey].push(transaction);
       });
 
       setTransactions(groupedTransactions);
       
       // Calculate monthly stats
-      const allTransactions = Object.values(groupedTransactions).flat();
-      const income = allTransactions
+      const income = typedTransactions
         .filter(t => t.type === 'income')
         .reduce((sum, t) => sum + Number(t.amount), 0);
-      const expenses = allTransactions
+      const expenses = typedTransactions
         .filter(t => t.type === 'expense')
         .reduce((sum, t) => sum + Number(t.amount), 0);
       
@@ -284,64 +294,55 @@ export default function CalendarView() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Recent transactions for current month */}
+        
+        {/* Latest Transactions */}
         <Card className="glass-card mt-6">
           <CardHeader>
-            <CardTitle className="text-foreground">This Month's Transactions</CardTitle>
+            <CardTitle className="text-lg text-foreground flex items-center justify-between">
+              <span>Latest Transactions</span>
+              <Link to="/transactions">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  View All
+                </Button>
+              </Link>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {Object.keys(transactions).length === 0 ? (
+            {allTransactions.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-muted-foreground">No transactions this month</p>
+                <p className="text-muted-foreground mb-4">No recent transactions</p>
+                <Link to="/add-transaction">
+                  <Button className="text-primary-foreground">Add Transaction</Button>
+                </Link>
               </div>
             ) : (
-              <div className="space-y-4">
-                {Object.entries(transactions)
-                  .sort(([a], [b]) => b.localeCompare(a))
-                  .slice(0, 10)
-                  .map(([date, dayTransactions]) => (
-                    <div key={date}>
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium">
-                          {new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </h4>
-                        <Badge variant="outline">
-                          {dayTransactions.length} transaction{dayTransactions.length !== 1 ? 's' : ''}
-                        </Badge>
+              <div className="space-y-3">
+                {allTransactions.slice(0, 10).map((transaction) => (
+                  <div key={transaction.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">📄</span>
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: transaction.categories?.color || '#9ACD32' }}
+                        />
                       </div>
-                      
-                      <div className="space-y-2 ml-4">
-                        {dayTransactions.map((transaction) => (
-                          <div key={transaction.id} className="flex items-center justify-between p-2 bg-muted/50 rounded">
-                            <div className="flex items-center space-x-2">
-                              <div 
-                                className="w-3 h-3 rounded-full"
-                                style={{ backgroundColor: transaction.categories?.color || '#6B7280' }}
-                              />
-                              <div>
-                                <p className="text-sm font-medium">
-                                  {transaction.categories?.name || 'Uncategorized'}
-                                </p>
-                                {transaction.description && (
-                                  <p className="text-xs text-muted-foreground">{transaction.description}</p>
-                                )}
-                              </div>
-                            </div>
-                            <p className={`text-sm font-bold ${
-                              transaction.type === 'income' ? 'text-success' : 'text-destructive'
-                            }`}>
-                              {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
-                            </p>
-                          </div>
-                        ))}
+                      <div>
+                        <p className="font-semibold text-foreground">{transaction.categories?.name || 'Uncategorized'}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(transaction.transaction_date).toLocaleDateString()} • {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        </p>
                       </div>
                     </div>
-                  ))}
+                    <div className="text-right">
+                      <p className={`font-bold text-lg ${
+                        transaction.type === 'income' ? 'text-success' : 'text-destructive'
+                      }`}>
+                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
+                      </p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>

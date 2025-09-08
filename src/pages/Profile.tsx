@@ -133,7 +133,7 @@ export default function Profile() {
         {/* Action Cards */}
         <div className="space-y-4">
           {/* Transactions Card */}
-          <Link to="/calendar">
+          <Link to="/transactions">
             <Card className="glass-card hover:bg-card/90 transition-colors">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
