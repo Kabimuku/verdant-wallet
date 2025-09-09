@@ -186,43 +186,43 @@ export default function AllTransactionHistory() {
   return (
     <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="glass-card rounded-none border-x-0 border-t-0 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+      <div className="glass-card rounded-none border-x-0 border-t-0 p-4 md:p-6">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <div className="flex items-center space-x-3 md:space-x-4">
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate(-1)}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] p-2"
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-2xl font-bold text-foreground">All Transactions</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">All Transactions</h1>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-12 h-12 text-base"
             />
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-              <SelectTrigger>
-                <Calendar className="h-4 w-4 mr-2" />
+              <SelectTrigger className="h-12 text-base">
+                <Calendar className="h-5 w-5 mr-2" />
                 <SelectValue placeholder="All months" />
               </SelectTrigger>
-              <SelectContent className="bg-card border-border">
-                <SelectItem value="all-months">All months</SelectItem>
+              <SelectContent className="bg-card border-border z-50">
+                <SelectItem value="all-months" className="h-12 text-base">All months</SelectItem>
                 {getMonthOptions().map(month => (
-                  <SelectItem key={month.value} value={month.value}>
+                  <SelectItem key={month.value} value={month.value} className="h-12 text-base">
                     {month.label}
                   </SelectItem>
                 ))}
@@ -230,16 +230,16 @@ export default function AllTransactionHistory() {
             </Select>
 
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <Filter className="h-4 w-4 mr-2" />
+              <SelectTrigger className="h-12 text-base">
+                <Filter className="h-5 w-5 mr-2" />
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
-              <SelectContent className="bg-card border-border">
-                <SelectItem value="all">All categories</SelectItem>
+              <SelectContent className="bg-card border-border z-50">
+                <SelectItem value="all" className="h-12 text-base">All categories</SelectItem>
                 {categories.map(category => (
-                  <SelectItem key={category.id} value={category.name}>
+                  <SelectItem key={category.id} value={category.name} className="h-12 text-base">
                     <div className="flex items-center space-x-2">
-                      <span>📄</span>
+                      <span className="text-lg">{category.icon || '📄'}</span>
                       <span>{category.name}</span>
                     </div>
                   </SelectItem>
@@ -250,9 +250,9 @@ export default function AllTransactionHistory() {
         </div>
       </div>
 
-      <div className="p-6 space-y-6 pb-24">
+      <div className="p-4 md:p-6 space-y-4 md:space-y-6 pb-24">
         {Object.keys(groupedTransactions).length === 0 ? (
-          <Card className="glass-card">
+          <Card className="glass-card m-4 md:m-0">
             <CardContent className="text-center py-12">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-lg font-semibold text-foreground mb-2">No transactions found</h3>
@@ -262,7 +262,7 @@ export default function AllTransactionHistory() {
                   : 'Start tracking your finances to see your transaction history'}
               </p>
               <Link to="/add-transaction">
-                <Button className="text-primary-foreground">
+                <Button className="text-primary-foreground min-h-[44px] px-6 text-base">
                   Add Your First Transaction
                 </Button>
               </Link>
@@ -270,9 +270,9 @@ export default function AllTransactionHistory() {
           </Card>
         ) : (
           Object.entries(groupedTransactions).map(([date, dayTransactions]) => (
-            <Card key={date} className="glass-card">
+            <Card key={date} className="glass-card m-4 md:m-0">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg text-foreground">
+                <CardTitle className="text-lg md:text-xl text-foreground">
                   {new Date(date).toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
@@ -280,58 +280,69 @@ export default function AllTransactionHistory() {
                     day: 'numeric'
                   })}
                 </CardTitle>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm md:text-base text-muted-foreground font-medium">
                   {dayTransactions.length} transaction{dayTransactions.length !== 1 ? 's' : ''}
                 </div>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 md:space-y-4">
                 {dayTransactions.map((transaction) => (
                   <div 
                     key={transaction.id} 
-                    className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer"
+                    className="flex items-center justify-between p-4 md:p-5 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer min-h-[80px]"
                     onClick={() => setEditingTransaction(transaction)}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg">📄</span>
+                    <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
+                      <div className="flex items-center space-x-3 flex-shrink-0">
+                        <span className="text-2xl md:text-3xl">📄</span>
                         <div 
-                          className="w-3 h-3 rounded-full"
+                          className="w-4 h-4 md:w-5 md:h-5 rounded-full border border-white/20"
                           style={{ backgroundColor: transaction.categories?.color || '#9ACD32' }}
                         />
                       </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-base md:text-lg text-foreground truncate">
                           {transaction.categories?.name || 'Uncategorized'}
                         </p>
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <span>
-                            {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </span>
-                          {transaction.payment_method && (
-                            <>
-                              <span>•</span>
-                              <span className="capitalize">{transaction.payment_method}</span>
-                            </>
-                          )}
+                        <div className="flex flex-col space-y-1 text-sm md:text-base text-muted-foreground">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium">
+                              {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                            {transaction.payment_method && (
+                              <>
+                                <span>•</span>
+                                <span className="capitalize font-medium">{transaction.payment_method}</span>
+                              </>
+                            )}
+                          </div>
                           {transaction.description && (
-                            <>
-                              <span>•</span>
-                              <span>{transaction.description}</span>
-                            </>
+                            <span className="truncate text-xs md:text-sm">{transaction.description}</span>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <p className={`font-bold text-lg ${
-                        transaction.type === 'income' ? 'text-success' : 'text-destructive'
-                      }`}>
-                        {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
-                      </p>
-                      <Edit className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+                      <div className="text-right">
+                        <p className={`font-bold text-lg md:text-xl ${
+                          transaction.type === 'income' ? 'text-success' : 'text-destructive'
+                        }`}>
+                          {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
+                        </p>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="min-h-[44px] min-w-[44px] p-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingTransaction(transaction);
+                        }}
+                      >
+                        <Edit className="h-5 w-5 text-muted-foreground" />
+                      </Button>
                     </div>
                   </div>
                 ))}

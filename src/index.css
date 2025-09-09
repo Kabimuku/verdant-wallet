@@ -139,4 +139,43 @@ All colors MUST be HSL.
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-card rounded-xl;
   }
+
+  /* Mobile-optimized touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Typography improvements for mobile */
+  .text-mobile-lg {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.5;
+  }
+
+  .text-mobile-xl {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.4;
+  }
+
+  /* Enhanced contrast for mobile readability */
+  .text-high-contrast {
+    color: hsl(var(--foreground));
+    font-weight: 600;
+  }
+
+  /* Mobile-friendly spacing */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+
+  .mobile-spacing-lg {
+    padding: 1.5rem;
+  }
+
+  /* Better dropdown visibility */
+  .dropdown-enhanced {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    z-index: 50;
+  }
 }

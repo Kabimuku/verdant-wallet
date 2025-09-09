@@ -339,34 +339,34 @@ export default function CategoryManagement() {
         </div>
       </div>
 
-      <div className="p-6 space-y-6 pb-24">
+      <div className="p-4 md:p-6 space-y-4 md:space-y-6 pb-24">
         {/* Search and Filter */}
         <Card className="glass-card">
           <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col gap-3 md:flex-row md:gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   placeholder="Search categories..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-12 h-12 text-base"
                 />
               </div>
               
               <Select value={filterType} onValueChange={(value: 'all' | 'income' | 'expense') => setFilterType(value)}>
-                <SelectTrigger className="w-full sm:w-32">
+                <SelectTrigger className="w-full md:w-32 h-12 text-base">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
+                <SelectContent className="bg-card border-border z-50">
+                  <SelectItem value="all" className="h-12 text-base">All</SelectItem>
+                  <SelectItem value="income" className="h-12 text-base">Income</SelectItem>
+                  <SelectItem value="expense" className="h-12 text-base">Expense</SelectItem>
                 </SelectContent>
               </Select>
               
-              <Button variant="outline" onClick={handleResetDefaults}>
-                <RotateCcw className="h-4 w-4 mr-2" />
+              <Button variant="outline" onClick={handleResetDefaults} className="min-h-[44px] text-base">
+                <RotateCcw className="h-5 w-5 mr-2" />
                 Reset
               </Button>
             </div>
@@ -374,38 +374,43 @@ export default function CategoryManagement() {
         </Card>
 
         {/* Categories List */}
-        <div className="space-y-3">
+        <div className="space-y-3 md:space-y-4">
           {filteredCategories.map((category) => (
-            <Card key={category.id} className="glass-card">
-              <CardContent className="p-4">
+            <Card key={category.id} className="glass-card m-4 md:m-0">
+              <CardContent className="p-4 md:p-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
-                      <span className="text-lg">{category.icon || '📄'}</span>
+                  <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
+                    <div className="flex items-center space-x-3 flex-shrink-0">
+                      <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
+                      <span className="text-2xl md:text-3xl">{category.icon || '📄'}</span>
                     </div>
                     
-                    <div>
-                      <h3 className="font-semibold text-foreground">{category.name}</h3>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          category.type === 'income' ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-bold text-lg md:text-xl text-foreground truncate">{category.name}</h3>
+                      <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4 text-sm md:text-base">
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          category.type === 'income' 
+                            ? 'bg-success/20 text-success border border-success/30' 
+                            : 'bg-destructive/20 text-destructive border border-destructive/30'
                         }`}>
-                          {category.type}
+                          {category.type.toUpperCase()}
                         </span>
-                        <span>{category.transaction_count || 0} transactions</span>
+                        <span className="text-muted-foreground font-medium">
+                          {category.transaction_count || 0} transactions
+                        </span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
                     <div 
-                      className="w-6 h-6 rounded-full border border-border/50"
+                      className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-border/50"
                       style={{ backgroundColor: category.color }}
                     />
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="min-h-[44px] min-w-[44px] p-2"
                       onClick={() => {
                         setEditingCategory(category);
                         setNewCategory({
@@ -417,15 +422,15 @@ export default function CategoryManagement() {
                         setIsDialogOpen(true);
                       }}
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-5 w-5" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      className="min-h-[44px] min-w-[44px] p-2 text-destructive hover:text-destructive"
                       onClick={() => handleDeleteCategory(category.id)}
-                      className="text-destructive hover:text-destructive"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-5 w-5" />
                     </Button>
                   </div>
                 </div>

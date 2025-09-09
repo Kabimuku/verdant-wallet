@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { ProgressBar } from '@/components/ProgressBar';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 interface CategoryData {
   name: string;
@@ -216,17 +217,67 @@ export default function Insights() {
           </Card>
         ) : (
           <>
+            {/* Pie Chart */}
+            <Card className="glass-card mb-6">
+              <CardHeader>
+                <CardTitle className="text-center text-foreground text-lg md:text-xl">
+                  {viewType.charAt(0).toUpperCase() + viewType.slice(1)} Distribution - {getTimeframeLabel()}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64 md:h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value, percent }) => 
+                          `${name}: ${(percent * 100).toFixed(1)}%`
+                        }
+                        outerRadius={window.innerWidth < 768 ? 80 : 100}
+                        fill="#8884d8"
+                        dataKey="value"
+                        animationBegin={0}
+                        animationDuration={800}
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value: number) => [formatCurrency(value), 'Amount']}
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          color: 'hsl(var(--foreground))'
+                        }}
+                      />
+                      <Legend 
+                        wrapperStyle={{
+                          paddingTop: '20px',
+                          fontSize: '14px'
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Progress Bars */}
             <Card className="glass-card">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between text-foreground">
-                  <span>{viewType.charAt(0).toUpperCase() + viewType.slice(1)} Breakdown</span>
-                  <span className="text-xl font-bold text-primary">
+                <CardTitle className="flex items-center justify-between text-foreground text-lg md:text-xl">
+                  <span>Category Breakdown</span>
+                  <span className="text-xl md:text-2xl font-bold text-primary">
                     {formatCurrency(totalAmount)}
                   </span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 md:space-y-6">
                 {chartData.map((category, index) => {
                   const percentage = (category.value / totalAmount) * 100;
                   
