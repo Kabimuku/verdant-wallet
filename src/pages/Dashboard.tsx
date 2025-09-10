@@ -30,6 +30,8 @@ export default function Dashboard() {
   const [totalBalance, setTotalBalance] = useState(0);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
+  const [dailyIncome, setDailyIncome] = useState(0);
+  const [dailyExpenses, setDailyExpenses] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showBalance, setShowBalance] = useState(true);
 
@@ -93,6 +95,23 @@ export default function Dashboard() {
 
       setMonthlyIncome(income);
       setMonthlyExpenses(expenses);
+
+      // Calculate today's income and expenses
+      const today = new Date().toISOString().split('T')[0];
+      const todayTransactions = typedTransactions.filter(transaction => 
+        transaction.transaction_date.split('T')[0] === today
+      );
+      
+      const todayIncome = todayTransactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+      
+      const todayExpenses = todayTransactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + Number(t.amount), 0);
+
+      setDailyIncome(todayIncome);
+      setDailyExpenses(todayExpenses);
 
       // Generate balance history for chart
       const balanceHistory = generateBalanceHistory(typedTransactions);
@@ -251,30 +270,58 @@ export default function Dashboard() {
             <CardTitle className="text-lg text-foreground">This Month's Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-success/20 rounded-xl border border-success/30">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-success rounded-full flex items-center justify-center">
+            {/* Income Card */}
+            <div 
+              className="flex items-center min-h-[72px] p-4 bg-success/20 rounded-xl border border-success/30 touch-target"
+              role="button"
+              tabIndex={0}
+              aria-label={`Income: Today ${formatCurrency(dailyIncome)}, This month ${formatCurrency(monthlyIncome)}`}
+            >
+              <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div className="w-12 h-12 bg-success rounded-full flex items-center justify-center flex-shrink-0">
                   <TrendingUp className="h-6 w-6 text-success-foreground" />
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">Income</p>
-                  <p className="text-sm text-muted-foreground">This month</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <p className="font-semibold text-foreground text-sm truncate">Income</p>
+                    <p className="text-lg font-bold text-success truncate">+{formatCurrency(dailyIncome)}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-xs text-muted-foreground truncate">This month</p>
+                    <p className="text-sm font-medium text-success/80 truncate">{formatCurrency(monthlyIncome)}</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-xl font-bold text-success">{formatCurrency(monthlyIncome)}</p>
+              <div className="text-right flex-shrink-0 ml-2">
+                <p className="text-2xl font-bold text-success leading-none">{formatCurrency(dailyIncome)}</p>
+              </div>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-destructive/20 rounded-xl border border-destructive/30">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-destructive rounded-full flex items-center justify-center">
+            {/* Expenses Card */}
+            <div 
+              className="flex items-center min-h-[72px] p-4 bg-destructive/20 rounded-xl border border-destructive/30 touch-target"
+              role="button"
+              tabIndex={0}
+              aria-label={`Expenses: Today ${formatCurrency(dailyExpenses)}, This month ${formatCurrency(monthlyExpenses)}`}
+            >
+              <div className="flex items-center space-x-4 flex-1 min-w-0">
+                <div className="w-12 h-12 bg-destructive rounded-full flex items-center justify-center flex-shrink-0">
                   <TrendingDown className="h-6 w-6 text-destructive-foreground" />
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">Expenses</p>
-                  <p className="text-sm text-muted-foreground">This month</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <p className="font-semibold text-foreground text-sm truncate">Expenses</p>
+                    <p className="text-lg font-bold text-destructive truncate">-{formatCurrency(dailyExpenses)}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-xs text-muted-foreground truncate">This month</p>
+                    <p className="text-sm font-medium text-destructive/80 truncate">{formatCurrency(monthlyExpenses)}</p>
+                  </div>
                 </div>
               </div>
-              <p className="text-xl font-bold text-destructive">{formatCurrency(monthlyExpenses)}</p>
+              <div className="text-right flex-shrink-0 ml-2">
+                <p className="text-2xl font-bold text-destructive leading-none">{formatCurrency(dailyExpenses)}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
