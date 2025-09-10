@@ -249,24 +249,27 @@ export default function CategoryManagement() {
   return (
     <div className="min-h-screen gradient-dark">
       {/* Header */}
-      <div className="glass-card rounded-none border-x-0 border-t-0 p-6">
+      <div className="glass-card rounded-none border-x-0 border-t-0 px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <Link to="/profile">
-              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px]">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <h1 className="text-2xl font-bold text-foreground">Category Management</h1>
+            <h1 className="text-lg md:text-xl font-bold text-foreground">Category Manage</h1>
           </div>
-          
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="text-primary-foreground">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Category
-              </Button>
-            </DialogTrigger>
+        </div>
+      </div>
+
+      {/* Floating Add Button */}
+      <div className="fixed top-4 right-6 z-50">
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="rounded-full shadow-lg min-h-[44px] min-w-[44px] p-3">
+              <Plus className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
             <DialogContent className="glass-card border-border">
               <DialogHeader>
                 <DialogTitle className="text-foreground">
@@ -337,9 +340,8 @@ export default function CategoryManagement() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
 
-      <div className="px-3 py-4 md:p-6 space-y-3 md:space-y-6 pb-20">
+      <div className="px-6 py-4 space-y-4 pb-24 pt-16">
         {/* Search and Filter */}
         <Card className="glass-card">
           <CardContent className="p-4">
@@ -364,19 +366,14 @@ export default function CategoryManagement() {
                   <SelectItem value="expense" className="h-12 text-base">Expense</SelectItem>
                 </SelectContent>
               </Select>
-              
-              <Button variant="outline" onClick={handleResetDefaults} className="min-h-[44px] text-base">
-                <RotateCcw className="h-5 w-5 mr-2" />
-                Reset
-              </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Categories List */}
-        <div className="space-y-2 md:space-y-3">
+        <div className="space-y-3 mt-4">
           {filteredCategories.map((category) => (
-            <Card key={category.id} className="glass-card mx-2 md:mx-0">
+            <Card key={category.id} className="glass-card">
               <CardContent className="p-3 md:p-4">
                 <div className="flex items-center justify-between min-h-[60px]">
                   <div className="flex items-center space-x-2 md:space-x-3 flex-1 min-w-0">
