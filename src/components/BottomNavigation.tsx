@@ -13,8 +13,8 @@ export function BottomNavigation() {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-md border-t border-border/50 shadow-soft animate-fade-in">
-      <div className="flex items-center justify-around h-16 max-w-md mx-auto relative">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border/50 shadow-soft animate-fade-in z-40">
+      <div className="flex items-center justify-around h-16 max-w-md mx-auto relative safe-area-inset-bottom">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
           

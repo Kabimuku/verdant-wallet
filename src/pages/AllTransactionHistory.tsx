@@ -250,9 +250,9 @@ export default function AllTransactionHistory() {
         </div>
       </div>
 
-      <div className="p-4 md:p-6 space-y-4 md:space-y-6 pb-24">
+      <div className="px-3 py-4 md:p-6 space-y-3 md:space-y-6 pb-20">
         {Object.keys(groupedTransactions).length === 0 ? (
-          <Card className="glass-card m-4 md:m-0">
+          <Card className="glass-card mx-2 md:mx-0">
             <CardContent className="text-center py-12">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-lg font-semibold text-foreground mb-2">No transactions found</h3>
@@ -270,7 +270,7 @@ export default function AllTransactionHistory() {
           </Card>
         ) : (
           Object.entries(groupedTransactions).map(([date, dayTransactions]) => (
-            <Card key={date} className="glass-card m-4 md:m-0">
+            <Card key={date} className="glass-card mx-2 md:mx-0">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg md:text-xl text-foreground">
                   {new Date(date).toLocaleDateString('en-US', {
@@ -288,45 +288,45 @@ export default function AllTransactionHistory() {
                 {dayTransactions.map((transaction) => (
                   <div 
                     key={transaction.id} 
-                    className="flex items-center justify-between p-4 md:p-5 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer min-h-[80px]"
+                    className="flex items-center justify-between p-3 md:p-4 bg-muted/30 rounded-xl border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer min-h-[72px]"
                     onClick={() => setEditingTransaction(transaction)}
                   >
-                    <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 flex-shrink-0">
-                        <span className="text-2xl md:text-3xl">📄</span>
+                    <div className="flex items-center space-x-2 md:space-x-3 flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 flex-shrink-0">
+                        <span className="text-xl md:text-2xl leading-none">📄</span>
                         <div 
-                          className="w-4 h-4 md:w-5 md:h-5 rounded-full border border-white/20"
+                          className="w-3 h-3 md:w-4 md:h-4 rounded-full border border-white/20 flex-shrink-0"
                           style={{ backgroundColor: transaction.categories?.color || '#9ACD32' }}
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="font-bold text-base md:text-lg text-foreground truncate">
+                        <p className="font-bold text-sm md:text-base text-foreground truncate leading-tight">
                           {transaction.categories?.name || 'Uncategorized'}
                         </p>
-                        <div className="flex flex-col space-y-1 text-sm md:text-base text-muted-foreground">
-                          <div className="flex items-center space-x-2">
-                            <span className="font-medium">
-                              {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </span>
-                            {transaction.payment_method && (
-                              <>
-                                <span>•</span>
-                                <span className="capitalize font-medium">{transaction.payment_method}</span>
-                              </>
-                            )}
-                          </div>
-                          {transaction.description && (
-                            <span className="truncate text-xs md:text-sm">{transaction.description}</span>
+                        <div className="flex items-center space-x-1 text-xs md:text-sm text-muted-foreground mt-0.5">
+                          <span className="font-medium">
+                            {new Date(transaction.transaction_date).toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                          {transaction.payment_method && (
+                            <>
+                              <span>•</span>
+                              <span className="capitalize font-medium truncate">{transaction.payment_method}</span>
+                            </>
                           )}
                         </div>
+                        {transaction.description && (
+                          <p className="text-xs md:text-sm text-muted-foreground truncate mt-0.5">
+                            {transaction.description}
+                          </p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+                    <div className="flex items-center space-x-1 md:space-x-2 flex-shrink-0">
                       <div className="text-right">
-                        <p className={`font-bold text-lg md:text-xl ${
+                        <p className={`font-bold text-sm md:text-lg leading-tight ${
                           transaction.type === 'income' ? 'text-success' : 'text-destructive'
                         }`}>
                           {transaction.type === 'income' ? '+' : '-'}{formatCurrency(Number(transaction.amount))}
@@ -335,13 +335,13 @@ export default function AllTransactionHistory() {
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="min-h-[44px] min-w-[44px] p-2"
+                        className="min-h-[44px] min-w-[44px] p-2 flex-shrink-0"
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingTransaction(transaction);
                         }}
                       >
-                        <Edit className="h-5 w-5 text-muted-foreground" />
+                        <Edit className="h-4 w-4 text-muted-foreground" />
                       </Button>
                     </div>
                   </div>

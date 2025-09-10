@@ -339,7 +339,7 @@ export default function CategoryManagement() {
         </div>
       </div>
 
-      <div className="p-4 md:p-6 space-y-4 md:space-y-6 pb-24">
+      <div className="px-3 py-4 md:p-6 space-y-3 md:space-y-6 pb-20">
         {/* Search and Filter */}
         <Card className="glass-card">
           <CardContent className="p-4">
@@ -374,37 +374,37 @@ export default function CategoryManagement() {
         </Card>
 
         {/* Categories List */}
-        <div className="space-y-3 md:space-y-4">
+        <div className="space-y-2 md:space-y-3">
           {filteredCategories.map((category) => (
-            <Card key={category.id} className="glass-card m-4 md:m-0">
-              <CardContent className="p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 md:space-x-4 flex-1 min-w-0">
-                    <div className="flex items-center space-x-3 flex-shrink-0">
-                      <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
-                      <span className="text-2xl md:text-3xl">{category.icon || '📄'}</span>
+            <Card key={category.id} className="glass-card mx-2 md:mx-0">
+              <CardContent className="p-3 md:p-4">
+                <div className="flex items-center justify-between min-h-[60px]">
+                  <div className="flex items-center space-x-2 md:space-x-3 flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+                      <span className="text-xl md:text-2xl leading-none">{category.icon || '📄'}</span>
                     </div>
                     
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-bold text-lg md:text-xl text-foreground truncate">{category.name}</h3>
-                      <div className="flex flex-col space-y-2 md:flex-row md:items-center md:space-y-0 md:space-x-4 text-sm md:text-base">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      <h3 className="font-bold text-sm md:text-lg text-foreground truncate leading-tight">{category.name}</h3>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center ${
                           category.type === 'income' 
                             ? 'bg-success/20 text-success border border-success/30' 
                             : 'bg-destructive/20 text-destructive border border-destructive/30'
                         }`}>
                           {category.type.toUpperCase()}
                         </span>
-                        <span className="text-muted-foreground font-medium">
+                        <span className="text-xs md:text-sm text-muted-foreground font-medium truncate">
                           {category.transaction_count || 0} transactions
                         </span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2 md:space-x-3 flex-shrink-0">
+                  <div className="flex items-center space-x-1 md:space-x-2 flex-shrink-0">
                     <div 
-                      className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-border/50"
+                      className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-border/50 flex-shrink-0"
                       style={{ backgroundColor: category.color }}
                     />
                     <Button
@@ -422,7 +422,7 @@ export default function CategoryManagement() {
                         setIsDialogOpen(true);
                       }}
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -430,7 +430,7 @@ export default function CategoryManagement() {
                       className="min-h-[44px] min-w-[44px] p-2 text-destructive hover:text-destructive"
                       onClick={() => handleDeleteCategory(category.id)}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
