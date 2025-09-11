@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertTriangle, Wallet } from 'lucide-react';
+import { calculateBudgetSummary, formatCurrency, BudgetSummary } from '@/utils/budgetCalculations';
 
 interface Category {
   id: string;
@@ -26,6 +27,7 @@ export default function AddTransaction() {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('expense');
+  const [budgetImpact, setBudgetImpact] = useState<{remaining: number; willExceed: boolean} | null>(null);
   const [formData, setFormData] = useState({
     amount: '',
     categoryId: '',
@@ -37,6 +39,57 @@ export default function AddTransaction() {
   useEffect(() => {
     fetchCategories();
   }, [user, transactionType]);
+
+  useEffect(() => {
+    if (transactionType === 'expense' && formData.amount) {
+      checkBudgetImpact();
+    }
+  }, [formData.amount, transactionType]);
+
+  const checkBudgetImpact = async () => {
+    if (!user || !formData.amount || transactionType !== 'expense') {
+      setBudgetImpact(null);
+      return;
+    }
+
+    try {
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      const transactionAmount = parseFloat(formData.amount);
+
+      // Get current month's budget
+      const { data: budgetData } = await supabase
+        .from('budgets')
+        .select('amount')
+        .eq('user_id', user.id)
+        .eq('month', currentMonth)
+        .eq('year', currentYear);
+
+      if (!budgetData || budgetData.length === 0) return;
+
+      const totalBudget = budgetData.reduce((sum, b) => sum + Number(b.amount), 0);
+
+      // Get current month's expenses
+      const startOfMonth = new Date(currentYear, currentMonth - 1, 1);
+      const endOfMonth = new Date(currentYear, currentMonth, 0);
+
+      const { data: transactionData } = await supabase
+        .from('transactions')
+        .select('amount')
+        .eq('user_id', user.id)
+        .eq('type', 'expense')
+        .gte('transaction_date', startOfMonth.toISOString())
+        .lte('transaction_date', endOfMonth.toISOString());
+
+      const currentSpent = transactionData?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+      const remaining = totalBudget - currentSpent;
+      const willExceed = transactionAmount > remaining;
+
+      setBudgetImpact({ remaining, willExceed });
+    } catch (error) {
+      console.error('Error checking budget impact:', error);
+    }
+  };
 
   const fetchCategories = async () => {
     if (!user) return;
@@ -174,6 +227,36 @@ export default function AddTransaction() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Budget Impact Warning */}
+          {budgetImpact && transactionType === 'expense' && (
+            <Card className={`${budgetImpact.willExceed ? 'bg-destructive/10 border-destructive/30' : 'bg-primary/10 border-primary/30'}`}>
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    budgetImpact.willExceed ? 'bg-destructive/20' : 'bg-primary/20'
+                  }`}>
+                    {budgetImpact.willExceed ? (
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                    ) : (
+                      <Wallet className="h-4 w-4 text-primary" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-sm font-medium ${budgetImpact.willExceed ? 'text-destructive' : 'text-foreground'}`}>
+                      {budgetImpact.willExceed ? 'Budget Alert' : 'Budget Impact'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {budgetImpact.willExceed 
+                        ? `This expense will exceed your remaining budget by ${formatCurrency(parseFloat(formData.amount) - budgetImpact.remaining)}`
+                        : `${formatCurrency(budgetImpact.remaining - parseFloat(formData.amount))} will remain after this expense`
+                      }
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Category */}
           <div className="space-y-2">

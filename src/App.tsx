@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import CategoryManagement from "./components/CategoryManagement";
 import AllTransactionHistory from "./pages/AllTransactionHistory";
+import Budget from "./pages/Budget";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="settings" element={<Settings />} />
               <Route path="categories" element={<CategoryManagement />} />
               <Route path="transactions" element={<AllTransactionHistory />} />
+              <Route path="budget" element={<Budget />} />
             </Route>
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

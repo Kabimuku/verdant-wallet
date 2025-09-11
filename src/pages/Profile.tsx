@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { User, Settings, BarChart3, ChevronRight } from 'lucide-react';
+import { User, Settings, BarChart3, ChevronRight, Wallet } from 'lucide-react';
 
 interface Profile {
   full_name: string;
@@ -15,6 +15,7 @@ interface Profile {
 interface Stats {
   totalTransactions: number;
   categoriesCount: number;
+  budgetCount: number;
 }
 
 export default function Profile() {
@@ -24,7 +25,8 @@ export default function Profile() {
   const [profile, setProfile] = useState<Profile>({ full_name: '', email: '' });
   const [stats, setStats] = useState<Stats>({
     totalTransactions: 0,
-    categoriesCount: 0
+    categoriesCount: 0,
+    budgetCount: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -80,9 +82,23 @@ export default function Profile() {
 
       if (categoriesError) throw categoriesError;
 
+      // Get budget count for current month
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      
+      const { count: budgetCount, error: budgetError } = await supabase
+        .from('budgets')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user?.id)
+        .eq('month', currentMonth)
+        .eq('year', currentYear);
+
+      if (budgetError) throw budgetError;
+
       setStats({
         totalTransactions: transactionCount || 0,
-        categoriesCount: categoriesCount || 0
+        categoriesCount: categoriesCount || 0,
+        budgetCount: budgetCount || 0
       });
     } catch (error: any) {
       console.error('Failed to fetch stats:', error);
@@ -164,6 +180,26 @@ export default function Profile() {
                     <div>
                       <h3 className="text-lg font-semibold text-foreground">Categories</h3>
                       <p className="text-sm text-muted-foreground">{stats.categoriesCount} categories created</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Budget Card */}
+          <Link to="/budget">
+            <Card className="glass-card hover:bg-card/90 transition-colors">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                      <Wallet className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">Budget</h3>
+                      <p className="text-sm text-muted-foreground">{stats.budgetCount} budget{stats.budgetCount !== 1 ? 's' : ''} this month</p>
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground" />

@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, TrendingUp, TrendingDown, Calendar, Eye, EyeOff } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Calendar, Eye, EyeOff, Wallet, AlertTriangle } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { calculateBudgetSummary, formatCurrency, getBudgetStatusColor, getBudgetStatusText, generateBudgetRecommendation, BudgetSummary } from '@/utils/budgetCalculations';
 
 interface Transaction {
   id: string;
@@ -32,6 +33,7 @@ export default function Dashboard() {
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
   const [dailyIncome, setDailyIncome] = useState(0);
   const [dailyExpenses, setDailyExpenses] = useState(0);
+  const [budgetSummary, setBudgetSummary] = useState<BudgetSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBalance, setShowBalance] = useState(true);
 
@@ -117,6 +119,9 @@ export default function Dashboard() {
       const balanceHistory = generateBalanceHistory(typedTransactions);
       setBalanceData(balanceHistory);
 
+      // Fetch and calculate budget summary
+      await fetchBudgetSummary(typedTransactions);
+
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -125,6 +130,30 @@ export default function Dashboard() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchBudgetSummary = async (transactions: Transaction[]) => {
+    try {
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+
+      // Fetch current month's budgets
+      const { data: budgetData, error } = await supabase
+        .from('budgets')
+        .select('amount, category_id')
+        .eq('user_id', user?.id)
+        .eq('month', currentMonth)
+        .eq('year', currentYear);
+
+      if (error) throw error;
+
+      if (budgetData && budgetData.length > 0) {
+        const summary = calculateBudgetSummary(budgetData, transactions, currentMonth, currentYear);
+        setBudgetSummary(summary);
+      }
+    } catch (error) {
+      console.error('Error fetching budget summary:', error);
     }
   };
 
@@ -263,6 +292,62 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Budget Summary */}
+        {budgetSummary && (
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-lg text-foreground">
+                <div className="flex items-center space-x-2">
+                  <Wallet className="h-5 w-5 text-primary" />
+                  <span>Budget Status</span>
+                </div>
+                <Link to="/budget">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                    Manage
+                  </Button>
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {formatCurrency(budgetSummary.totalSpent)} of {formatCurrency(budgetSummary.totalBudget)}
+                </span>
+                <span className={`text-sm font-medium ${getBudgetStatusColor(budgetSummary.status)}`}>
+                  {getBudgetStatusText(budgetSummary.status)}
+                </span>
+              </div>
+              
+              <div className="relative">
+                <div className="w-full bg-muted/30 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-500 ${
+                      budgetSummary.status === 'safe' ? 'bg-emerald-500' :
+                      budgetSummary.status === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${Math.min(budgetSummary.percentage, 100)}%` }}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg border border-primary/20">
+                <div className="flex items-center space-x-2">
+                  {budgetSummary.status === 'danger' ? (
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                  ) : (
+                    <Wallet className="h-4 w-4 text-primary" />
+                  )}
+                </div>
+                <div className="text-right flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">
+                    {generateBudgetRecommendation(budgetSummary)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Monthly Overview */}
         <Card className="glass-card">
