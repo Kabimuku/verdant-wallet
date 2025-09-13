@@ -17,6 +17,7 @@ interface Category {
   name: string;
   type: 'income' | 'expense';
   color: string;
+  icon?: string;
 }
 
 export default function AddTransaction() {
@@ -38,6 +39,27 @@ export default function AddTransaction() {
 
   useEffect(() => {
     fetchCategories();
+    
+    // Set up real-time subscription for category changes
+    const channel = supabase
+      .channel('category-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'categories',
+          filter: `user_id=eq.${user?.id}`
+        },
+        () => {
+          fetchCategories(); // Refresh categories on any change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, transactionType]);
 
   useEffect(() => {
@@ -269,6 +291,7 @@ export default function AddTransaction() {
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     <div className="flex items-center space-x-2">
+                      <span className="text-lg">{category.icon || '📄'}</span>
                       <div 
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: category.color }}

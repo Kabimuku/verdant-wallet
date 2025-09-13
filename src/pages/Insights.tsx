@@ -12,12 +12,13 @@ interface CategoryData {
   name: string;
   value: number;
   color: string;
+  icon?: string;
 }
 
 interface Transaction {
   amount: number;
   type: 'income' | 'expense';
-  categories?: { name: string; color: string };
+  categories?: { name: string; color: string; icon?: string };
 }
 
 export default function Insights() {
@@ -33,6 +34,39 @@ export default function Insights() {
   useEffect(() => {
     if (user) {
       fetchInsightsData();
+      
+      // Set up real-time subscription for transaction and category changes
+      const channel = supabase
+        .channel('insights-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchInsightsData();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'categories',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchInsightsData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, viewType, timeframe]);
 
@@ -63,7 +97,8 @@ export default function Insights() {
           type,
           categories (
             name,
-            color
+            color,
+            icon
           )
         `)
         .eq('user_id', user?.id)
@@ -74,7 +109,7 @@ export default function Insights() {
       if (error) throw error;
 
       // Group transactions by category
-      const categoryMap = new Map<string, { total: number; color: string }>();
+      const categoryMap = new Map<string, { total: number; color: string; icon?: string }>();
       let total = 0;
 
       (transactions || []).forEach((transaction: any) => {
@@ -85,6 +120,7 @@ export default function Insights() {
         
         const categoryName = typedTransaction.categories?.name || 'Uncategorized';
         const categoryColor = typedTransaction.categories?.color || '#6B7280';
+        const categoryIcon = typedTransaction.categories?.icon || '📄';
         const amount = Number(typedTransaction.amount);
         
         total += amount;
@@ -92,15 +128,16 @@ export default function Insights() {
         if (categoryMap.has(categoryName)) {
           categoryMap.get(categoryName)!.total += amount;
         } else {
-          categoryMap.set(categoryName, { total: amount, color: categoryColor });
+          categoryMap.set(categoryName, { total: amount, color: categoryColor, icon: categoryIcon });
         }
       });
 
       // Convert to chart data
-      const data = Array.from(categoryMap.entries()).map(([name, { total, color }]) => ({
+      const data = Array.from(categoryMap.entries()).map(([name, { total, color, icon }]) => ({
         name,
         value: total,
-        color
+        color,
+        icon
       })).sort((a, b) => b.value - a.value);
 
       setChartData(data);
@@ -288,7 +325,7 @@ export default function Insights() {
                       amount={category.value}
                       percentage={percentage}
                       color={category.color}
-                      icon="📊"
+                      icon={category.icon || '📊'}
                       formatCurrency={formatCurrency}
                     />
                   );

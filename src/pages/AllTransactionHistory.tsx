@@ -45,6 +45,39 @@ export default function AllTransactionHistory() {
   useEffect(() => {
     if (user) {
       fetchData();
+      
+      // Set up real-time subscription for transaction changes
+      const channel = supabase
+        .channel('transaction-history-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'transactions',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchData();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'categories',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user]);
 

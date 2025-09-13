@@ -93,8 +93,15 @@ export function EmojiPickerComponent({
     </Button>
   );
 
-  // Use Dialog for mobile, Popover for desktop
-  const isMobile = window.innerWidth < 768;
+  // Detect mobile for responsive design
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (isMobile) {
     return (

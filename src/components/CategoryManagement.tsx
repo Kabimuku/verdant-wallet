@@ -45,6 +45,27 @@ export default function CategoryManagement() {
   useEffect(() => {
     if (user) {
       fetchCategories();
+      
+      // Set up real-time subscription for category changes
+      const channel = supabase
+        .channel('category-management-updates')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'categories',
+            filter: `user_id=eq.${user.id}`
+          },
+          () => {
+            fetchCategories();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user]);
 
