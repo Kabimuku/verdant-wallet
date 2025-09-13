@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, GripVertical, Search, RotateCcw, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import EmojiPickerComponent from '@/components/EmojiPicker';
 
 interface Category {
   id: string;
@@ -21,20 +22,11 @@ interface Category {
   user_id?: string;
 }
 
-const categoryIcons = [
-  { name: 'Food', icon: '🍽️' },
-  { name: 'Transport', icon: '🚗' },
-  { name: 'Shopping', icon: '🛍️' },
-  { name: 'Bills', icon: '📄' },
-  { name: 'Entertainment', icon: '🎬' },
-  { name: 'Health', icon: '🏥' },
-  { name: 'Education', icon: '📚' },
-  { name: 'Travel', icon: '✈️' },
-  { name: 'Salary', icon: '💰' },
-  { name: 'Business', icon: '💼' },
-  { name: 'Investment', icon: '📈' },
-  { name: 'Gift', icon: '🎁' },
-];
+// Default emojis for new categories
+const defaultEmojis = {
+  income: ['💰', '💼', '📈', '🎁', '💵', '🏦'],
+  expense: ['🍽️', '🚗', '🛍️', '📄', '🎬', '🏥', '📚', '✈️']
+};
 
 export default function CategoryManagement() {
   const { user } = useAuth();
@@ -47,6 +39,7 @@ export default function CategoryManagement() {
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState({ name: '', color: '#9ACD32', type: 'expense', icon: '📄' });
+  const [isUpdating, setIsUpdating] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
@@ -118,18 +111,22 @@ export default function CategoryManagement() {
 
   const handleSaveCategory = async () => {
     try {
+      setIsUpdating(true);
+      
       const categoryData = editingCategory 
         ? { 
             id: editingCategory.id,
             name: newCategory.name,
             color: newCategory.color,
             type: newCategory.type,
+            icon: newCategory.icon,
             user_id: editingCategory.user_id
           }
         : { 
             name: newCategory.name,
             color: newCategory.color,
             type: newCategory.type,
+            icon: newCategory.icon,
             user_id: user?.id!
           };
 
@@ -139,7 +136,8 @@ export default function CategoryManagement() {
             .update({
               name: categoryData.name,
               color: categoryData.color,
-              type: categoryData.type
+              type: categoryData.type,
+              icon: categoryData.icon
             })
             .eq('id', editingCategory.id)
         : await supabase
@@ -156,13 +154,15 @@ export default function CategoryManagement() {
       setIsDialogOpen(false);
       setEditingCategory(null);
       setNewCategory({ name: '', color: '#9ACD32', type: 'expense', icon: '📄' });
-      fetchCategories();
+      await fetchCategories(); // Wait for refresh to complete
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
         description: `Failed to ${editingCategory ? 'update' : 'create'} category`
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -198,16 +198,16 @@ export default function CategoryManagement() {
         .delete()
         .eq('user_id', user?.id);
 
-      // Insert default categories
+      // Insert default categories with emojis
       const defaultCategories = [
-        { name: 'Food & Dining', color: '#FF6B6B', type: 'expense', user_id: user?.id },
-        { name: 'Transportation', color: '#4ECDC4', type: 'expense', user_id: user?.id },
-        { name: 'Shopping', color: '#45B7D1', type: 'expense', user_id: user?.id },
-        { name: 'Bills & Utilities', color: '#96CEB4', type: 'expense', user_id: user?.id },
-        { name: 'Entertainment', color: '#FFEAA7', type: 'expense', user_id: user?.id },
-        { name: 'Salary', color: '#9ACD32', type: 'income', user_id: user?.id },
-        { name: 'Business', color: '#DDA0DD', type: 'income', user_id: user?.id },
-        { name: 'Investment', color: '#98D8C8', type: 'income', user_id: user?.id },
+        { name: 'Food & Dining', color: '#FF6B6B', type: 'expense', icon: '🍽️', user_id: user?.id },
+        { name: 'Transportation', color: '#4ECDC4', type: 'expense', icon: '🚗', user_id: user?.id },
+        { name: 'Shopping', color: '#45B7D1', type: 'expense', icon: '🛍️', user_id: user?.id },
+        { name: 'Bills & Utilities', color: '#96CEB4', type: 'expense', icon: '📄', user_id: user?.id },
+        { name: 'Entertainment', color: '#FFEAA7', type: 'expense', icon: '🎬', user_id: user?.id },
+        { name: 'Salary', color: '#9ACD32', type: 'income', icon: '💰', user_id: user?.id },
+        { name: 'Business', color: '#DDA0DD', type: 'income', icon: '💼', user_id: user?.id },
+        { name: 'Investment', color: '#98D8C8', type: 'income', icon: '📈', user_id: user?.id },
       ];
 
       const { error } = await supabase
@@ -304,23 +304,31 @@ export default function CategoryManagement() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="icon">Icon</Label>
-                  <Select value={newCategory.icon} onValueChange={(value) => 
-                    setNewCategory(prev => ({ ...prev, icon: value }))
-                  }>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categoryIcons.map((item) => (
-                        <SelectItem key={item.name} value={item.icon}>
-                          <div className="flex items-center space-x-2">
-                            <span>{item.icon}</span>
-                            <span>{item.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center space-x-3">
+                    <EmojiPickerComponent
+                      selectedEmoji={newCategory.icon}
+                      onEmojiSelect={(emoji) => setNewCategory(prev => ({ ...prev, icon: emoji }))}
+                      size="lg"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm text-muted-foreground">
+                        Tap to choose any emoji for your category
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {(newCategory.type === 'income' ? defaultEmojis.income : defaultEmojis.expense).map((emoji) => (
+                          <Button
+                            key={emoji}
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => setNewCategory(prev => ({ ...prev, icon: emoji }))}
+                          >
+                            <span className="text-lg">{emoji}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -333,8 +341,12 @@ export default function CategoryManagement() {
                   />
                 </div>
                 
-                <Button onClick={handleSaveCategory} className="w-full text-primary-foreground">
-                  {editingCategory ? 'Update Category' : 'Create Category'}
+                <Button 
+                  onClick={handleSaveCategory} 
+                  className="w-full text-primary-foreground"
+                  disabled={isUpdating || !newCategory.name.trim()}
+                >
+                  {isUpdating ? 'Saving...' : (editingCategory ? 'Update Category' : 'Create Category')}
                 </Button>
               </div>
             </DialogContent>
