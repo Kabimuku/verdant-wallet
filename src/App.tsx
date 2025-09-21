@@ -5,8 +5,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { AdminAuthProvider } from "@/hooks/useAdminAuth";
+import { MaintenanceWrapper } from "@/components/MaintenanceWrapper";
 import Layout from "./components/Layout";
 import Auth from "./pages/Auth";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import Dashboard from "./pages/Dashboard";
 import AddTransaction from "./pages/AddTransaction";
 import Insights from "./pages/Insights";
@@ -23,28 +27,38 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="add-transaction" element={<AddTransaction />} />
-              <Route path="insights" element={<Insights />} />
-              <Route path="calendar" element={<CalendarView />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="categories" element={<CategoryManagement />} />
-              <Route path="transactions" element={<AllTransactionHistory />} />
-              <Route path="budget" element={<Budget />} />
-            </Route>
-            <Route path="/auth" element={<Auth />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <AdminAuthProvider>
+        <AuthProvider>
+          <MaintenanceWrapper>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                
+                {/* User Routes */}
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Dashboard />} />
+                  <Route path="add-transaction" element={<AddTransaction />} />
+                  <Route path="insights" element={<Insights />} />
+                  <Route path="calendar" element={<CalendarView />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="categories" element={<CategoryManagement />} />
+                  <Route path="transactions" element={<AllTransactionHistory />} />
+                  <Route path="budget" element={<Budget />} />
+                </Route>
+                <Route path="/auth" element={<Auth />} />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </MaintenanceWrapper>
+        </AuthProvider>
+      </AdminAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
